@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  background: #071126;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Responsive hero grid */
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 420px);
+  gap: 44px;
+  align-items: center;
+}
+
+.hero-card {
+  justify-self: center;
+}
+
+@media (max-width: 768px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .hero-card {
+    justify-self: center;
+  }
+  .hero-card img {
+    width: 100%;
+    max-width: 320px;
+  }
+}
