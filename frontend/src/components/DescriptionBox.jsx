@@ -88,47 +88,72 @@ function DescriptionBox({ description, setDescription }) {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-        <button
-          type="button"
-          onClick={toggleListening}
-          disabled={!speechSupported}
-          className="inline-flex items-center gap-2 rounded-xl border border-cyan-400/20 bg-cyan-500/10 px-3 py-2 text-sm font-medium text-cyan-300 transition hover:bg-cyan-500/15 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          {listening ? <FaMicrophoneSlash className="text-base" /> : <FaMicrophone className="text-base" />}
-          <span>{listening ? translate(language, "report.voiceStop") : translate(language, "report.voiceButton")}</span>
-        </button>
-        <p className="text-xs text-slate-400 max-w-lg">
-          {listening ? translate(language, "report.voiceListening") : translate(language, "report.voiceTip")}
-        </p>
-      </div>
       {!speechSupported && (
-        <p className="text-xs text-rose-300 mb-3">
+        <p style={{ color: "#fda4af", fontSize: "12px", marginBottom: "10px" }}>
           {translate(language, "report.voiceUnsupported")}
         </p>
       )}
 
-      {/* Text Area */}
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder={translate(language, "report.descriptionPlaceholder")}
-        style={{
-          width: "100%",
-          height: "160px",
-          borderRadius: "12px",
-          background: "rgba(2,6,23,0.6)",
-          border: "1px solid rgba(71,85,105,0.5)",
-          padding: "16px 18px",
-          color: "white",
-          fontSize: "14px",
-          outline: "none",
-          resize: "none",
-          lineHeight: "1.7",
-          boxSizing: "border-box",
-          fontFamily: "inherit",
-        }}
-      />
+      <p style={{
+        color: listening ? "#67e8f9" : "#64748b",
+        fontSize: "12px",
+        marginBottom: "10px",
+        lineHeight: 1.5,
+      }}>
+        {listening ? translate(language, "report.voiceListening") : translate(language, "report.voiceTip")}
+      </p>
+
+      {/* Text Area with voice button */}
+      <div style={{ position: "relative" }}>
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder={translate(language, "report.descriptionPlaceholder")}
+          style={{
+            width: "100%",
+            height: "160px",
+            borderRadius: "12px",
+            background: "rgba(2,6,23,0.6)",
+            border: listening ? "1px solid rgba(34,211,238,0.45)" : "1px solid rgba(71,85,105,0.5)",
+            padding: "16px 52px 16px 18px",
+            color: "white",
+            fontSize: "14px",
+            outline: "none",
+            resize: "none",
+            lineHeight: "1.7",
+            boxSizing: "border-box",
+            fontFamily: "inherit",
+            transition: "border-color 0.2s",
+          }}
+        />
+        <button
+          type="button"
+          onClick={toggleListening}
+          disabled={!speechSupported}
+          aria-label={listening ? translate(language, "report.voiceStop") : translate(language, "report.voiceButton")}
+          title={listening ? translate(language, "report.voiceStop") : translate(language, "report.voiceButton")}
+          style={{
+            position: "absolute",
+            top: "12px",
+            right: "12px",
+            width: "36px",
+            height: "36px",
+            borderRadius: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            border: listening ? "1px solid rgba(248,113,113,0.45)" : "1px solid rgba(34,211,238,0.25)",
+            background: listening ? "rgba(248,113,113,0.15)" : "rgba(34,211,238,0.1)",
+            color: listening ? "#fca5a5" : "#22d3ee",
+            cursor: speechSupported ? "pointer" : "not-allowed",
+            opacity: speechSupported ? 1 : 0.4,
+            transition: "background 0.2s, border-color 0.2s, color 0.2s",
+            flexShrink: 0,
+          }}
+        >
+          {listening ? <FaMicrophoneSlash style={{ fontSize: "15px" }} /> : <FaMicrophone style={{ fontSize: "15px" }} />}
+        </button>
+      </div>
 
       <p className="mt-3 text-xs text-slate-600">
         {translate(language, "report.descriptionTip")}

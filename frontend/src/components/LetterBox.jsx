@@ -3,52 +3,81 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaEnvelopeOpenText, FaCopy, FaDownload, FaSpinner, FaExternalLinkAlt, FaCheckCircle } from "react-icons/fa";
 
 // ── Department → complaint portal link mapping ─────────────────────────────
-const DEPARTMENT_LINKS = {
-  // Road / Infrastructure
-  "road":        { name: "Road Maintenance Department",    url: "https://www.pass.gov.pk/",           hint: "Punjab Citizen Portal" },
-  "pothole":     { name: "Road Maintenance Department",    url: "https://www.pass.gov.pk/",           hint: "Punjab Citizen Portal" },
-  "highway":     { name: "Road Maintenance Department",    url: "https://www.pass.gov.pk/",           hint: "Punjab Citizen Portal" },
-  "infrastructure": { name: "Public Works Department",    url: "https://www.pass.gov.pk/",             hint: "Punjab Citizen Portal" },
+const PORTAL_ROUTES = [
+  {
+    keywords: ["wasa", "water & sanitation", "water and sanitation", "water & drainage", "water supply", "drainage", "sewage", "pipe", "water board", "water"],
+    url: "https://cms.wasalhr.pk/",
+    hint: "WASA Lahore Complaint Portal",
+    fallbackName: "Water & Sanitation Authority (WASA)",
+  },
+  {
+    keywords: ["lesco", "k-electric", "k electric", "electricity", "electricity board", "electric supply", "power supply", "streetlight", "street light"],
+    url: "https://www.lesco.gov.pk/",
+    hint: "Lahore Electric Supply Company",
+    fallbackName: "LESCO",
+  },
+  {
+    keywords: ["lwmc", "waste management", "garbage", "sanitation", "waste", "trash", "solid waste"],
+    url: "https://crm.punjab.gov.pk/PublicUser",
+    hint: "Chief Minister Punjab Complaint Portal",
+    fallbackName: "Lahore Waste Management Company (LWMC)",
+  },
+  {
+    keywords: ["pha", "parks", "horticulture", "garden", "green belt", "public property"],
+    url: "https://www.pha.punjab.gov.pk/",
+    hint: "Parks & Horticulture Authority",
+    fallbackName: "Parks & Horticulture Authority (PHA)",
+  },
+  {
+    keywords: ["road", "pothole", "highway", "nha", "public works", "infrastructure", "footpath", "sidewalk", "cda", "municipal"],
+    url: "https://crm.punjab.gov.pk/PublicUser",
+    hint: "Chief Minister Punjab Complaint Portal",
+    fallbackName: "Road Maintenance / Public Works Department",
+  },
+];
 
-  // Water & Drainage
-  "water":       { name: "Water & Sanitation Authority",  url: "https://www.wasa.punjab.gov.pk/", hint: "WASA Punjab" },
-  "drainage":    { name: "Water & Sanitation Authority",  url: "https://www.wasa.punjab.gov.pk/", hint: "WASA Punjab" },
-  "sewage":      { name: "Water & Sanitation Authority",  url: "https://www.wasa.punjab.gov.pk/", hint: "WASA Punjab" },
-  "pipe":        { name: "Water & Sanitation Authority",  url: "https://www.wasa.punjab.gov.pk/", hint: "WASA Punjab" },
-
-  // Electricity
-  "electricity": { name: "LESCO / KESC Electricity Board",url: "https://www.lesco.gov.pk/",        hint: "Lahore Electric Supply Company" },
-  "streetlight": { name: "LESCO / KESC Electricity Board",url: "https://www.lesco.gov.pk/",        hint: "Lahore Electric Supply Company" },
-  "power":       { name: "LESCO / KESC Electricity Board",url: "https://www.lesco.gov.pk/",        hint: "Lahore Electric Supply Company" },
-
-  // Sanitation / Waste
-  "garbage":     { name: "Municipal Sanitation Department",url: "https://www.pass.gov.pk/",  hint: "Punjab Citizen Portal" },
-  "sanitation":  { name: "Municipal Sanitation Department",url: "https://www.pass.gov.pk/",  hint: "Punjab Citizen Portal" },
-  "waste":       { name: "Municipal Sanitation Department",url: "https://www.pass.gov.pk/",  hint: "Punjab Citizen Portal" },
-  "trash":       { name: "Municipal Sanitation Department",url: "https://www.pass.gov.pk/",  hint: "Punjab Citizen Portal" },
-
-  // Public Property
-  "park":        { name: "Parks & Horticulture Authority", url: "https://www.pha.punjab.gov.pk/",                hint: "Parks & Horticulture Authority" },
-  "footpath":    { name: "Public Works Department",        url: "https://www.pass.gov.pk/",                  hint: "Punjab Citizen Portal" },
-  "sidewalk":    { name: "Public Works Department",        url: "https://www.pass.gov.pk/",                  hint: "Punjab Citizen Portal" },
-
-  // Fallback
-  "default":     { name: "Pakistan Citizen Portal",        url: "https://www.pass.gov.pk/",                  hint: "Punjab Citizen Portal" },
+const DEFAULT_PORTAL = {
+  url: "https://web.citizenportal.gov.pk/",
+  hint: "Pakistan Citizen Portal",
+  fallbackName: "Pakistan Citizen Portal",
 };
 
-/** Match department/category keywords from AI report to a portal link */
-function getDepartmentLink(analysisText) {
-  const lower = (analysisText || "").toLowerCase();
-  for (const [keyword, info] of Object.entries(DEPARTMENT_LINKS)) {
-    if (keyword !== "default" && lower.includes(keyword)) return info;
-  }
-  return DEPARTMENT_LINKS["default"];
+/** Extract a single-line field from the structured AI report */
+function extractField(analysisText, label) {
+  const match = (analysisText || "").match(new RegExp(`${label}[:\\s]+([^\\n]+)`, "i"));
+  return match ? match[1].trim() : "";
 }
 
 /** Extract department name from AI analysis text */
 function extractDepartment(analysisText) {
-  const match = analysisText.match(/responsible department[:\s]+([^\n]+)/i);
-  return match ? match[1].trim() : "Municipal Authority";
+  return extractField(analysisText, "🏢\\s*RESPONSIBLE DEPARTMENT")
+    || extractField(analysisText, "RESPONSIBLE DEPARTMENT")
+    || "Municipal Authority";
+}
+
+/** Match extracted department (then category) to the correct complaint portal */
+function getDepartmentLink(analysisText) {
+  const department = extractDepartment(analysisText).toLowerCase();
+  const category = extractField(analysisText, "🏷️\\s*CATEGORY")
+    || extractField(analysisText, "CATEGORY");
+
+  const matchRoute = (text) => {
+    const lower = (text || "").toLowerCase();
+    if (!lower) return null;
+    return PORTAL_ROUTES.find((route) =>
+      route.keywords.some((keyword) => lower.includes(keyword))
+    );
+  };
+
+  const route = matchRoute(department) || matchRoute(category);
+  const portal = route || DEFAULT_PORTAL;
+  const displayName = extractDepartment(analysisText) || portal.fallbackName;
+
+  return {
+    name: displayName,
+    url: portal.url,
+    hint: portal.hint,
+  };
 }
 
 // ── Component ──────────────────────────────────────────────────────────────
@@ -60,7 +89,7 @@ function LetterBox({ report, description, location }) {
 
   const deptInfo   = getDepartmentLink(report);
   const department = extractDepartment(report);
-  const portalUrl  = deptInfo?.url || "https://www.pass.gov.pk/";
+  const portalUrl  = deptInfo.url;
 
   const generateLetter = async () => {
     setLoading(true);
@@ -86,44 +115,22 @@ function LetterBox({ report, description, location }) {
     setLoading(false);
   };
 
-  const submitComplaint = async () => {
-    if (!submitEmail && !submitPhone) {
-      alert("Please provide at least an email or phone number");
-      return;
-    }
-
-    setSubmitLoading(true);
-    try {
-      const res = await fetch("http://127.0.0.1:5000/submit-complaint", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          description,
-          location,
-          analysis: report,
-          department,
-          email: submitEmail,
-          phone: submitPhone,
-          letter,
-        }),
-      });
-      const data = await res.json();
-      if (data.status === "success") {
-        alert(`✅ Complaint submitted successfully!\nReport ID: #${data.report_id}\n\nWe will contact you at ${submitEmail || submitPhone}`);
-        setShowSubmit(false);
-        setSubmitEmail("");
-        setSubmitPhone("");
-      } else {
-        alert(`❌ Error: ${data.message}`);
-      }
-    } catch (error) {
-      alert("❌ Could not submit complaint. Make sure backend is running.");
-    }
-    setSubmitLoading(false);
+  const copyLetter = async () => {
+    if (!letter) return;
+    await navigator.clipboard.writeText(letter);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const openComplaintPortal = () => {
-    setShowSubmit(true);
+  const downloadLetter = () => {
+    if (!letter) return;
+    const blob = new Blob([letter], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "complaint-letter.txt";
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -179,13 +186,13 @@ function LetterBox({ report, description, location }) {
           }}
         >
           <FaExternalLinkAlt />
-          🏢 File Complaint to {deptInfo?.name || "Authorities"}
+          🏢 File Complaint to {deptInfo.name}
         </a>
       </div>
 
       {/* Department hint */}
       <p style={{ color: "#475569", fontSize: "12px", marginTop: "8px", paddingLeft: "4px" }}>
-        🔗 Complaint portal: <span style={{ color: "#64748b" }}>{deptInfo?.hint}</span> — opens in a new tab.
+        🔗 Complaint portal: <span style={{ color: "#64748b" }}>{deptInfo.hint}</span> — opens in a new tab.
       </p>
       <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "4px", paddingLeft: "4px" }}>
         🔍 Target URL: <span style={{ color: "#38bdf8" }}>{portalUrl}</span>
