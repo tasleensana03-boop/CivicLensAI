@@ -2,23 +2,50 @@
 
 > AI-powered Smart Civic Issue Reporting Platform
 
-CivicLens AI is a full-stack web application that enables citizens to report civic issues such as potholes, garbage overflow, water leakage, damaged streetlights, and more. The platform uses Google Gemini AI to analyze the reported issue and generate an intelligent report with severity, possible cause, suggested action, and the responsible department.
+CivicLens AI is a full-stack AI-powered web application that enables citizens to report civic issues such as potholes, garbage overflow, water leakage, damaged streetlights, broken roads, and more. The platform uses Google Gemini AI to analyze reported issues and generate intelligent reports with severity, possible cause, suggested action, and the responsible department.
 
 ---
 
 ## ✨ Features
 
 - 📷 Upload civic issue images
-- 📝 Describe the issue
+- 📝 Describe civic issues
 - 📍 Detect user's current location
 - 🤖 AI-powered report generation using Google Gemini AI
 - 🏢 Automatic department recommendation
-- 🎨 Modern responsive UI built with React & Tailwind CSS
-- ⚡ Fast Flask backend API
+- 🎨 Modern responsive UI
+- ⚡ Flask REST API backend
+- 🌐 Full-stack architecture
 
 ---
 
-## 🛠️ Tech Stack
+# 📸 Screenshots
+
+## 🏠 Home Page
+
+![Home](screenshots/home.png)
+
+---
+
+## 📝 Report Issue
+
+![Report Page](screenshots/report-page.png)
+
+---
+
+## 🤖 AI Generated Report
+
+![AI Report](screenshots/ai-report.png)
+
+---
+
+## ℹ️ About Page
+
+![About](screenshots/about.png)
+
+---
+
+# 🛠️ Tech Stack
 
 ### Frontend
 
@@ -35,41 +62,49 @@ CivicLens AI is a full-stack web application that enables citizens to report civ
 
 ### Tools
 
+- Python
+- JavaScript
 - Git
 - GitHub
 - VS Code
 
 ---
 
-## 📂 Project Structure
+# 📂 Project Structure
 
-```
-CivicLensAI/
+```text
+CivicLensAI
 │
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   └── package.json
-│
-├── backend/
+├── backend
 │   ├── app.py
 │   ├── requirements.txt
 │   └── .env
+│
+├── frontend
+│   ├── src
+│   ├── public
+│   └── package.json
+│
+├── screenshots
+│   ├── home.png
+│   ├── report-page.png
+│   ├── ai-report.png
+│   └── about.png
 │
 └── README.md
 ```
 
 ---
 
-## 🚀 Installation
+# 🚀 Installation
 
-### Clone Repository
+## Clone the repository
 
 ```bash
 git clone https://github.com/tasleensana03-boop/CivicLensAI.git
 ```
 
-### Frontend
+## Frontend Setup
 
 ```bash
 cd frontend
@@ -77,7 +112,7 @@ npm install
 npm run dev
 ```
 
-### Backend
+## Backend Setup
 
 ```bash
 cd backend
@@ -87,7 +122,7 @@ python app.py
 
 ---
 
-## 🤖 AI Report Includes
+# 🤖 AI Report Includes
 
 - Civic Issue
 - Category
@@ -98,19 +133,19 @@ python app.py
 
 ---
 
-## 🎯 Future Enhancements
+# 🎯 Future Enhancements
 
+- 🗺️ Interactive Map Integration
 - 📊 Analytics Dashboard
-- 🗺️ Interactive Maps
-- 📦 Complaint Tracking
 - 🔐 User Authentication
-- ☁️ Cloud Deployment
-- 🧠 AI Image Analysis
+- 📦 Complaint Tracking
+- 📱 Mobile Responsive Improvements
+- 🧠 AI Image Classification
 - 🌍 Multi-language Support
 
 ---
 
-## 👩‍💻 Developed By
+# 👩‍💻 Developed By
 
 **Tasleen Sana**
 
@@ -121,4 +156,4 @@ https://github.com/tasleensana03-boop
 
 ---
 
-⭐ If you found this project useful, consider giving it a star!
+## ⭐ If you found this project useful, consider giving it a star!
